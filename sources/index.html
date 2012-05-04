@@ -68,6 +68,7 @@
                     if(event.data == "PreferencesUpdated")
                     {
                         refreshIcon();
+                        opera.extension.broadcastMessage(JSON.stringify(widget.preferences));
                     }
                 };
                 refreshIcon();

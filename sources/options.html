@@ -11,11 +11,14 @@
             <h1><span id="widget-name">Touch::Scroller</span> v<span id="widget-version">1.0.1</span></h1>
         </div>
         <div>
-            <h3><label>Friction</label>
-            <input name="Friction" id="frictionField" type="intput" value="5"/>
+            <h3><label>Enable touch mode</label>
+            <input id="touchEnabledField" type="checkbox" value="1"/>
             <br />
             <label>Show extension button in toolbar</label>
-            <input name="Friction" id="buttonVisibleField" type="checkbox" value="1"/>
+            <input id="buttonVisibleField" type="checkbox" value="1"/>
+            <br />
+            <label>Friction</label>
+            <input id="frictionField" type="intput" value="5"/>
             <br />
             <input id='submit' type='submit' value='Save'/>
             </h3>
@@ -32,13 +35,16 @@
                 // Init:Populate page fields with preferences values
                 document.getElementById("frictionField").value = widget.preferences.getItem("akiraTouchFriction");
                 document.getElementById("buttonVisibleField").checked = (widget.preferences.getItem("akiraTouchButton") == "true");
+                document.getElementById("touchEnabledField").checked = (widget.preferences.getItem("akiraTouchEnabled") == "true");
                 // Save:Store page fields to preferences
                 function savePrefs(e)
                 {
                     widget.preferences.setItem("akiraTouchFriction", frictionField.value);
                     widget.preferences.setItem("akiraTouchButton", buttonVisibleField.checked.toString());
+                    widget.preferences.setItem("akiraTouchEnabled", touchEnabledField.checked.toString());
                     opera.extension.postMessage("PreferencesUpdated");
                 }
+
                 //frictionField.addEventListener("Change", savePrefs, true);
                 document.getElementById("submit").addEventListener("Click", savePrefs, true);
             }, false);
