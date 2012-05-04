@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script>
+window.addEventListener("load", function()
+{
+	opera.extension.onconnect = function(e){e.source.postMessage(JSON.stringify(widget.preferences));};
+
+	var ToolbarUIItemProperties =
+	{
+		title: "Akira touch",
+		icon: "finger.png",
+		onclick: function(event)
+		{
+			if(widget.preferences["akiraTouchEnabled"] == "true")
+			{
+				widget.preferences.setItem("akiraTouchEnabled", "false" );
+				theButton.icon = "cursor.png";
+			}
+			else
+			{
+				widget.preferences.setItem("akiraTouchEnabled", "true" );
+				theButton.icon = "finger.png";
+			}
+			opera.postError(JSON.stringify(widget.preferences));
+			opera.extension.broadcastMessage(JSON.stringify(widget.preferences));
+		}
+	}
+	var theButton = opera.contexts.toolbar.createItem(ToolbarUIItemProperties);
+	opera.contexts.toolbar.addItem(theButton);
+}, false);
+</script>
+</head>
+<body>
+</body>
+</html>
