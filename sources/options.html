@@ -1,35 +1,48 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-  <head>
-    <link rel="stylesheet" href="options.css">
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title id="widget-title">Opera Extensions | Akira Touch</title>
-  </head>
-  <body>
-    <div id="header"> <img src="fingerPrintScroll.png">
-      <h1><span id="widget-name">Touch::Scroller</span> v<span id="widget-version">1.0.1</span></h1>
-    </div>
-    <div>
-      <h3>
-		<label>Friction</label><input name="Friction" id="frictionField" type="intput"/>
-		<input id='submit' type='submit' value='Save'/>
-      </h3>
-    </div>
-    <div id="footer">
-      <p>2012 © Akira</p>
-    </div>
+    <head>
+        <link rel="stylesheet" href="options.css">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <title id="widget-title">Opera Extensions | Akira Touch</title>
+    </head>
+    <body>
+        <div id="header">
+            <img src="fingerPrintScroll.png">
+            <h1><span id="widget-name">Touch::Scroller</span> v<span id="widget-version">1.0.1</span></h1>
+        </div>
+        <div>
+            <h3><label>Friction</label>
+            <input name="Friction" id="frictionField" type="intput" value="5"/>
+            <br />
+            <label>Show extension button in toolbar</label>
+            <input name="Friction" id="buttonVisibleField" type="checkbox" value="1"/>
+            <br />
+            <input id='submit' type='submit' value='Save'/>
+            </h3>
+        </div>
+        <div id="footer">
+            <p>
+                2012 © Akira
+            </p>
+        </div>
 
-  <script>
-window.addEventListener('DOMContentLoaded', function ()
-{
-	// Init:Populate page fields with preferences values
-	document.getElementById("frictionField").value = widget.preferences.getItem("akiraTouchFriction");
-	// Save:Store page fields to prefereces
-	function savePrefs(e){widget.preferences.setItem("akiraTouchFriction", frictionField.value);}
-	frictionField.addEventListener("Change", savePrefs, true);	
-	document.getElementById("submit").addEventListener("Click", savePrefs, true);
-}, false );
-  </script>
+        <script>
+            window.addEventListener('DOMContentLoaded', function()
+            {
+                // Init:Populate page fields with preferences values
+                document.getElementById("frictionField").value = widget.preferences.getItem("akiraTouchFriction");
+                document.getElementById("buttonVisibleField").checked = (widget.preferences.getItem("akiraTouchButton") == "true");
+                // Save:Store page fields to preferences
+                function savePrefs(e)
+                {
+                    widget.preferences.setItem("akiraTouchFriction", frictionField.value);
+                    widget.preferences.setItem("akiraTouchButton", buttonVisibleField.checked.toString());
+                    opera.extension.postMessage("PreferencesUpdated");
+                }
+                //frictionField.addEventListener("Change", savePrefs, true);
+                document.getElementById("submit").addEventListener("Click", savePrefs, true);
+            }, false);
+        </script>
 
-  </body>
+    </body>
 </html>
