@@ -27,6 +27,7 @@ window.addEventListener("load", function()
 		}
 	}
 	var theButton = opera.contexts.toolbar.createItem(ToolbarUIItemProperties);
+	theButton.onclick();theButton.onclick();// force icon refresh (dirty patch)
 	opera.contexts.toolbar.addItem(theButton);
 }, false);
 </script>
