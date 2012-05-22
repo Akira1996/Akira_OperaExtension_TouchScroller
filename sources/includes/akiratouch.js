@@ -88,7 +88,8 @@ var akiraTouch =
     {
         if(this.enabled != true)
             return;
-        if(e.target.type != 'input' && e.target.type != 'text' && e.target.type != 'textarea' && e.target.type != 'search')
+        var excludedControls = ["input", "text", "textarea", "search", "select", "select-one", "select-multiple"];
+        if(excludedControls.indexOf(e.target.type) == -1)// If control type is not in the list above
         {
             e.preventDefault();
             this.newPos.x = e.clientX;
