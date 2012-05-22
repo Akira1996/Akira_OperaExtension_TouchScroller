@@ -20,6 +20,12 @@
             <label>Friction</label>
             <input id="frictionField" type="intput" value="5"/>
             <br />
+            <label>Horizontal Move amplification</label>
+            <input id="moveAmpXField" type="intput" value="1"/>
+            <br />
+            <label>Vertical Move amplification</label>
+            <input id="moveAmpYField" type="intput" value="1"/>
+            <br />
             <input id='submit' type='submit' value='Save'/>
             </h3>
         </div>
@@ -36,12 +42,16 @@
                 document.getElementById("frictionField").value = widget.preferences.getItem("akiraTouchFriction");
                 document.getElementById("buttonVisibleField").checked = (widget.preferences.getItem("akiraTouchButton") == "true");
                 document.getElementById("touchEnabledField").checked = (widget.preferences.getItem("akiraTouchEnabled") == "true");
+                document.getElementById("moveAmpXField").value = widget.preferences.getItem("akiraTouchMoveAmpX");
+                document.getElementById("moveAmpYField").value = widget.preferences.getItem("akiraTouchMoveAmpY");
                 // Save:Store page fields to preferences
                 function savePrefs(e)
                 {
                     widget.preferences.setItem("akiraTouchFriction", frictionField.value);
                     widget.preferences.setItem("akiraTouchButton", buttonVisibleField.checked.toString());
                     widget.preferences.setItem("akiraTouchEnabled", touchEnabledField.checked.toString());
+                    widget.preferences.setItem("akiraTouchMoveAmpX", moveAmpXField.value);
+                    widget.preferences.setItem("akiraTouchMoveAmpY", moveAmpYField.value);
                     opera.extension.postMessage("PreferencesUpdated");
                 }
 

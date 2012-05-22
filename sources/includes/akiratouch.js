@@ -19,6 +19,11 @@ var akiraTouch =
         x : 0,
         y : 0
     },
+    moveAmp :
+    {
+        x : 1,
+        y : 1
+    },
 
     addEventListeners : function()
     {
@@ -61,12 +66,11 @@ var akiraTouch =
         }
         else if(this.state == "drag")
         {
-            /* Scroll equally to mouse moves */
-            window.scrollBy(this.oldPos.x - this.newPos.x, this.oldPos.y - this.newPos.y);
             /* store speed for intertia mode */
-            /** @todo introduce speed smoothing */
-            this.speed.x = this.oldPos.x - this.newPos.x;
-            this.speed.y = this.oldPos.y - this.newPos.y;
+            this.speed.x = this.moveAmp.x * (this.oldPos.x - this.newPos.x);
+            this.speed.y = this.moveAmp.y * (this.oldPos.y - this.newPos.y);
+            /* Scroll equally to mouse moves */
+            window.scrollBy(this.speed.x, this.speed.y);
             /* reset movement */
             this.oldPos.x = this.newPos.x;
             this.oldPos.y = this.newPos.y;
@@ -131,6 +135,8 @@ var akiraTouch =
         var storage = JSON.parse(e.data);
         this.enabled = eval(storage["akiraTouchEnabled"]);
         this.friction = eval(storage["akiraTouchFriction"]);
+        this.moveAmp.x = eval(storage["akiraTouchMoveAmpX"]);
+        this.moveAmp.y = eval(storage["akiraTouchMoveAmpY"]);        
     }
 }
 
