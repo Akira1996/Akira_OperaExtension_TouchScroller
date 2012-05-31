@@ -20,11 +20,17 @@
             <label>Friction</label>
             <input id="frictionField" type="intput" value="5"/>
             <br />
-            <label>Horizontal Move amplification</label>
+            <label>Horizontal Move amplification ratio</label>
             <input id="moveAmpXField" type="intput" value="1"/>
             <br />
-            <label>Vertical Move amplification</label>
+            <label>Horizontal Move inversion</label>
+            <input id="moveInvXField" type="checkbox" value="1"/>
+            <br />
+            <label>Vertical Move amplification ratio</label>
             <input id="moveAmpYField" type="intput" value="1"/>
+            <br />
+            <label>Vertical Move inversion</label>
+            <input id="moveInvYField" type="checkbox" value="1"/>
             <br />
             <input id='submit' type='submit' value='Save'/>
             </h3>
@@ -42,16 +48,23 @@
                 document.getElementById("frictionField").value = widget.preferences.getItem("akiraTouchFriction");
                 document.getElementById("buttonVisibleField").checked = (widget.preferences.getItem("akiraTouchButton") == "true");
                 document.getElementById("touchEnabledField").checked = (widget.preferences.getItem("akiraTouchEnabled") == "true");
-                document.getElementById("moveAmpXField").value = widget.preferences.getItem("akiraTouchMoveAmpX");
-                document.getElementById("moveAmpYField").value = widget.preferences.getItem("akiraTouchMoveAmpY");
+                document.getElementById("moveAmpXField").value = Math.abs(widget.preferences.getItem("akiraTouchMoveAmpX"));
+                document.getElementById("moveAmpYField").value = Math.abs(widget.preferences.getItem("akiraTouchMoveAmpY"));
+                document.getElementById("moveInvXField").checked = (widget.preferences.getItem("akiraTouchMoveAmpX") < 0);
+                document.getElementById("moveInvYField").checked = (widget.preferences.getItem("akiraTouchMoveAmpY") < 0);
                 // Save:Store page fields to preferences
                 function savePrefs(e)
                 {
+                    var invX=1;
+                    var invY=1;
+                    
                     widget.preferences.setItem("akiraTouchFriction", frictionField.value);
                     widget.preferences.setItem("akiraTouchButton", buttonVisibleField.checked.toString());
                     widget.preferences.setItem("akiraTouchEnabled", touchEnabledField.checked.toString());
-                    widget.preferences.setItem("akiraTouchMoveAmpX", moveAmpXField.value);
-                    widget.preferences.setItem("akiraTouchMoveAmpY", moveAmpYField.value);
+                    if (moveInvXField.checked) {invX=-1;};
+                    widget.preferences.setItem("akiraTouchMoveAmpX", invX*moveAmpXField.value);
+                    if (moveInvYField.checked) {invY=-1;};
+                    widget.preferences.setItem("akiraTouchMoveAmpY", invY*moveAmpYField.value);
                     opera.extension.postMessage("PreferencesUpdated");
                 }
 
