@@ -61,10 +61,10 @@ var akiraTouch =
     /**@brief Main loop, called periodicaly */
     onTimer : function()
     {
-        if(this.state == "noMove")
+        if (this.state == "noMove")
         {
         }
-        else if(this.state == "drag")
+        else if (this.state == "drag")
         {
             /* store speed for intertia mode */
             this.speed.x = this.moveAmp.x * (this.oldPos.x - this.newPos.x);
@@ -75,12 +75,12 @@ var akiraTouch =
             this.oldPos.x = this.newPos.x;
             this.oldPos.y = this.newPos.y;
         }
-        else if(this.state == "inertia")
+        else if (this.state == "inertia")
         {
             this.decreaseInertiaSpeed()
             /* Scroll equally to computed speed */
             window.scrollBy(this.speed.x, this.speed.y);
-            if((this.speed.x == 0) && (this.speed.y == 0))
+            if ((this.speed.x == 0) && (this.speed.y == 0))
             {
                 this.state = "noMove";
             }
@@ -90,24 +90,20 @@ var akiraTouch =
     /**@brief Engage drag mode upon button push */
     onMouseDown : function(e)
     {
-        if(this.enabled != true)
+        if (this.enabled != true)
             return;
         var excludedControls = ["input", "text", "textarea", "search", "select", "select-one", "select-multiple"];
-        if(excludedControls.indexOf(e.target.type) == -1)// If control type is not in the list above
+        if (excludedControls.indexOf(e.target.type) == -1)// If control type is not in the list above
         {
-            e.preventDefault();
-            this.newPos.x = e.clientX;
-            this.oldPos.x = this.newPos.x;
-            this.newPos.y = e.clientY;
-            this.oldPos.y = this.newPos.y;
             /* enter drag mode only if left button pushed */
-            if(e.button == 0)
+            if (e.button == this.activeButton)
             {
                 this.state = "drag";
-            }
-            else
-            {
-                this.state = "noMove";
+                e.preventDefault();
+                this.newPos.x = e.clientX;
+                this.oldPos.x = this.newPos.x;
+                this.newPos.y = e.clientY;
+                this.oldPos.y = this.newPos.y;
             }
         }
     },
@@ -115,7 +111,7 @@ var akiraTouch =
     /**@brief capture mouse new position */
     onMouseMove : function(e)
     {
-        if(this.enabled != true)
+        if (this.enabled != true)
             return;
         this.newPos.x = e.clientX;
         this.newPos.y = e.clientY;
@@ -124,9 +120,12 @@ var akiraTouch =
     /**@brief Engage inertia mode upon button release */
     onMouseUp : function(e)
     {
-        if(this.enabled != true)
+        if (this.enabled != true)
             return;
-        this.state = "inertia";
+        if ((e.button == this.activeButton) && (this.state == "drag"))
+        {
+            this.state = "inertia";
+        }
     },
 
     /**@brief Called on extension load, retrieves options */
@@ -136,7 +135,8 @@ var akiraTouch =
         this.enabled = eval(storage["akiraTouchEnabled"]);
         this.friction = eval(storage["akiraTouchFriction"]);
         this.moveAmp.x = eval(storage["akiraTouchMoveAmpX"]);
-        this.moveAmp.y = eval(storage["akiraTouchMoveAmpY"]);        
+        this.moveAmp.y = eval(storage["akiraTouchMoveAmpY"]);
+        this.activeButton = eval(storage["akiraTouchMouseActiveButton"]);
     }
 }
 

@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
     <head>
         <link rel="stylesheet" href="options.css">
@@ -16,6 +16,13 @@
             <br />
             <label>Show extension button in toolbar</label>
             <input id="buttonVisibleField" type="checkbox" value="1"/>
+            <br />
+            <label>Which mouse button?</label>
+            <select id="mouseButtonField">
+                <option value="0">Left</option>
+                <option value="1">Middle</option>
+                <option value="2">Right</option>
+            </select>
             <br />
             <label>Friction</label>
             <input id="frictionField" type="intput" value="5"/>
@@ -52,19 +59,27 @@
                 document.getElementById("moveAmpYField").value = Math.abs(widget.preferences.getItem("akiraTouchMoveAmpY"));
                 document.getElementById("moveInvXField").checked = (widget.preferences.getItem("akiraTouchMoveAmpX") < 0);
                 document.getElementById("moveInvYField").checked = (widget.preferences.getItem("akiraTouchMoveAmpY") < 0);
+                document.getElementById("mouseButtonField").value = widget.preferences.getItem("akiraTouchMouseActiveButton");
                 // Save:Store page fields to preferences
                 function savePrefs(e)
                 {
-                    var invX=1;
-                    var invY=1;
-                    
+                    var invX = 1;
+                    var invY = 1;
+
                     widget.preferences.setItem("akiraTouchFriction", frictionField.value);
                     widget.preferences.setItem("akiraTouchButton", buttonVisibleField.checked.toString());
                     widget.preferences.setItem("akiraTouchEnabled", touchEnabledField.checked.toString());
-                    if (moveInvXField.checked) {invX=-1;};
-                    widget.preferences.setItem("akiraTouchMoveAmpX", invX*moveAmpXField.value);
-                    if (moveInvYField.checked) {invY=-1;};
-                    widget.preferences.setItem("akiraTouchMoveAmpY", invY*moveAmpYField.value);
+                    if (moveInvXField.checked)
+                    {
+                        invX = -1;
+                    };
+                    widget.preferences.setItem("akiraTouchMoveAmpX", invX * moveAmpXField.value);
+                    if (moveInvYField.checked)
+                    {
+                        invY = -1;
+                    };
+                    widget.preferences.setItem("akiraTouchMoveAmpY", invY * moveAmpYField.value);
+                    widget.preferences.setItem("akiraTouchMouseActiveButton", mouseButtonField.value);
                     opera.extension.postMessage("PreferencesUpdated");
                 }
 

@@ -7,6 +7,7 @@
     <preference name="akiraTouchButton" value="true"/>
     <preference name="akiraTouchMoveAmpX" value="1"/>
     <preference name="akiraTouchMoveAmpY" value="1"/>
+    <preference name="akiraTouchMouseActiveButton" value="0"/>
     <update-description href="https://extension-updates.opera.com/api/w3c-wd1/update/787e63cd-b258-4523-b7ee-9a1300933ff9/"/>
     <license>Copyright 2012 Akira
 

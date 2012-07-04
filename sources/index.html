@@ -1,11 +1,11 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
     <head>
         <script>
             ///@brief Toggle mode between Enabled and Disabled
             toggleMode = function()
             {
-                if(widget.preferences["akiraTouchEnabled"] == "true")
+                if (widget.preferences["akiraTouchEnabled"] == "true")
                 {
                     widget.preferences.setItem("akiraTouchEnabled", "false");
                 }
@@ -19,9 +19,9 @@
             refreshIcon = function()
             {
                 // If the preferences say "no button" and there is a button, delete it
-                if(widget.preferences.getItem("akiraTouchButton") == "false")
+                if (widget.preferences.getItem("akiraTouchButton") == "false")
                 {
-                    if(theButton != 0)
+                    if (theButton != 0)
                     {
                         opera.contexts.toolbar.removeItem(theButton);
                         theButton = 0;
@@ -30,13 +30,13 @@
                 // If the preferences say "button" and there is no button, create it
                 else
                 {
-                    if(theButton == 0)
+                    if (theButton == 0)
                     {
                         theButton = opera.contexts.toolbar.createItem(ToolbarUIItemProperties);
                         opera.contexts.toolbar.addItem(theButton);
                     }
                     // Assign the correct icons to the button
-                    if(widget.preferences["akiraTouchEnabled"] == "true")
+                    if (widget.preferences["akiraTouchEnabled"] == "true")
                     {
                         theButton.icon = "finger.png";
                     }
@@ -65,7 +65,7 @@
                 };
                 opera.extension.onmessage = function(event)
                 {
-                    if(event.data == "PreferencesUpdated")
+                    if (event.data == "PreferencesUpdated")
                     {
                         refreshIcon();
                         opera.extension.broadcastMessage(JSON.stringify(widget.preferences));
