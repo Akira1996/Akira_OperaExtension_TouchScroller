@@ -1,3 +1,5 @@
+(function(){
+	
 var akiraTouch =
 {
     enabled : false,
@@ -27,10 +29,8 @@ var akiraTouch =
 
     addEventListeners : function()
     {
-        window.document.addEventListener('mousedown', this.onMouseDown.bind(this), false);
-        window.document.addEventListener('mouseup', this.onMouseUp.bind(this), false);
-        window.document.addEventListener('mousemove', this.onMouseMove.bind(this), false);
-        this.timerH = window.setInterval(this.onTimer.bind(this), 50);
+        window.document.addEventListener('mousedown', this.onMouseDown.bind(this), false);		
+		window.document.addEventListener('keyup', this.onKeyUp.bind(this), false);
     },
 
     decreaseInertiaSpeed : function()
@@ -58,13 +58,11 @@ var akiraTouch =
         this.speed.y = spd.y.sign * spd.y.mag;
     },
 
-    /**@brief Main loop, called periodicaly */
+    /**@brief Main loop, called periodically */
     onTimer : function()
     {
-        if (this.state == "noMove")
-        {
-        }
-        else if (this.state == "drag")
+        //if (this.state === "noMove") don't do anything
+        if (this.state === "drag")
         {
             /* store speed for intertia mode */
             this.speed.x = this.moveAmp.x * (this.oldPos.x - this.newPos.x);
@@ -75,14 +73,18 @@ var akiraTouch =
             this.oldPos.x = this.newPos.x;
             this.oldPos.y = this.newPos.y;
         }
-        else if (this.state == "inertia")
+        else if (this.state === "inertia")
         {
-            this.decreaseInertiaSpeed()
+            this.decreaseInertiaSpeed();
             /* Scroll equally to computed speed */
             window.scrollBy(this.speed.x, this.speed.y);
-            if ((this.speed.x == 0) && (this.speed.y == 0))
+			
+            if (this.speed.x === 0 && this.speed.y === 0)
             {
                 this.state = "noMove";
+				
+				window.clearInterval(this.timerH);
+				this.timerH = 0;
             }
         }
     },
@@ -92,19 +94,21 @@ var akiraTouch =
     {
         if ((this.enabled !== true && !e[this.monostableKey]) || (this.enabled === true && e[this.monostableKey])) return;
 		
+		// If control type is not in the upcoming list & correct mouse button pushed:
         var excludedControls = ["input", "text", "textarea", "search", "select", "select-one", "select-multiple"];
-        if (excludedControls.indexOf(e.target.type) == -1)// If control type is not in the list above
+        if (excludedControls.indexOf(e.target.type) === -1 && e.button === this.activeButton)
         {
-            /* enter drag mode only if left button pushed */
-            if (e.button == this.activeButton)
-            {
-                this.state = "drag";
-                e.preventDefault();
-                this.newPos.x = e.clientX;
-                this.oldPos.x = this.newPos.x;
-                this.newPos.y = e.clientY;
-                this.oldPos.y = this.newPos.y;
-            }
+			e.preventDefault();
+			window.document.addEventListener('mousemove', onMouseMove, false);
+			window.document.addEventListener('mouseup', onMouseUp, false);
+			
+			this.timerH = window.setInterval(this.onTimer.bind(this), 50);
+			
+			this.state = "drag";
+			this.newPos.x = e.clientX;
+			this.oldPos.x = this.newPos.x;
+			this.newPos.y = e.clientY;
+			this.oldPos.y = this.newPos.y;
         }
     },
 
@@ -120,30 +124,38 @@ var akiraTouch =
     /**@brief Engage inertia mode upon button release */
     onMouseUp : function(e)
     {
-        if (this.enabled !== true && !e[this.monostableKey]) return;
+        if ((this.enabled !== true && !e[this.monostableKey]) || e.button !== this.activeButton) return;
 		
-        if ((e.button == this.activeButton) && (this.state == "drag"))
-        {
-            this.state = "inertia";
-        }
+		window.document.removeEventListener('mousemove', onMouseMove, false);
+		window.document.removeEventListener('mouseup', onMouseUp, false);
+        this.state = "inertia";
+    },
+	
+	onKeyUp : function(e)
+    {
+        // missing: double press key to switch mode
     },
 
     /**@brief Called on extension load, retrieves options */
-    onMessage : function(e)
+    onMessage : function(e) // unnecessary!
     {
-        var storage = JSON.parse(e.data);
-        this.enabled = eval(storage["akiraTouchEnabled"]);
-        this.friction = eval(storage["akiraTouchFriction"]);
-        this.moveAmp.x = eval(storage["akiraTouchMoveAmpX"]);
-        this.moveAmp.y = eval(storage["akiraTouchMoveAmpY"]);
-        this.activeButton = eval(storage["akiraTouchMouseActiveButton"]);
-		this.monostableKey = storage["akiraTouchMonostableKey"];
+		var storage = widget.preferences;
+		
+        this.enabled		= eval(storage["akiraTouchEnabled"]);
+        this.friction		= eval(storage["akiraTouchFriction"]);
+        this.moveAmp.x		= eval(storage["akiraTouchMoveAmpX"]);
+        this.moveAmp.y		= eval(storage["akiraTouchMoveAmpY"]);
+        this.activeButton	= eval(storage["akiraTouchMouseActiveButton"]);
+		this.monostableKey	= storage["akiraTouchMonostableKey"];
     }
-}
-
-opera.extension.onmessage = function(e)
-{
-    akiraTouch.onMessage(e);
 };
+
+// wrap up functions so they can be removed again: 
+function onMouseMove(){	akiraTouch.onMouseMove.bind(akiraTouch)(window.event);	}
+function onMouseUp(){	akiraTouch.onMouseUp.bind(akiraTouch)(window.event);	}
+
+opera.extension.onmessage = function(e){ akiraTouch.onMessage(e); };
+
 akiraTouch.addEventListeners();
 
+})();
