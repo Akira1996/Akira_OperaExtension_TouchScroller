@@ -90,8 +90,8 @@ var akiraTouch =
     /**@brief Engage drag mode upon button push */
     onMouseDown : function(e)
     {
-        if (this.enabled != true)
-            return;
+        if ((this.enabled !== true && !e[this.monostableKey]) || (this.enabled === true && e[this.monostableKey])) return;
+		
         var excludedControls = ["input", "text", "textarea", "search", "select", "select-one", "select-multiple"];
         if (excludedControls.indexOf(e.target.type) == -1)// If control type is not in the list above
         {
@@ -111,8 +111,8 @@ var akiraTouch =
     /**@brief capture mouse new position */
     onMouseMove : function(e)
     {
-        if (this.enabled != true)
-            return;
+        if (this.enabled !== true && !e[this.monostableKey]) return;
+		
         this.newPos.x = e.clientX;
         this.newPos.y = e.clientY;
     },
@@ -120,8 +120,8 @@ var akiraTouch =
     /**@brief Engage inertia mode upon button release */
     onMouseUp : function(e)
     {
-        if (this.enabled != true)
-            return;
+        if (this.enabled !== true && !e[this.monostableKey]) return;
+		
         if ((e.button == this.activeButton) && (this.state == "drag"))
         {
             this.state = "inertia";
@@ -137,6 +137,7 @@ var akiraTouch =
         this.moveAmp.x = eval(storage["akiraTouchMoveAmpX"]);
         this.moveAmp.y = eval(storage["akiraTouchMoveAmpY"]);
         this.activeButton = eval(storage["akiraTouchMouseActiveButton"]);
+		this.monostableKey = storage["akiraTouchMonostableKey"];
     }
 }
 
