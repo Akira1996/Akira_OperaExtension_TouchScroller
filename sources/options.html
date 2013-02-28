@@ -2,13 +2,14 @@
 <html>
     <head>
         <link rel="stylesheet" href="options.css">
+        <link rel="icon" type="image/png" href="fingerPrintScroll.png">
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <title id="widget-title">Opera Extensions | Akira Touch</title>
     </head>
     <body>
         <div id="header">
             <img src="fingerPrintScroll.png">
-            <h1><span id="widget-name">Touch::Scroller</span> v<span id="widget-version">1.2.0</span></h1>
+            <h1><span id="widget-name">Touch::Scroller</span> v<span id="widget-version">1.3.0</span></h1>
         </div>
         <div>
             <h3><label>Enable touch mode</label>
@@ -23,6 +24,19 @@
                 <option value="1">Middle</option>
                 <option value="2">Right</option>
             </select>
+            <br />
+            <label>Choose a key to switch modes:</label>
+            <select id="monostableKeyField">
+            	<option value="ctrlKey" selected="selected">Ctrl</option>
+                <option value="metaKey">Cmd ⌘</option>
+                <option value="altKey">Alt</option>
+                <option value="shiftKey">Shift</option>
+            </select>
+            <br />
+            <ul>
+                <li>press and hold it for a temporary change</li>
+                <li>press it twice to toggle modes permanently</li>
+            </ul>
             <br />
             <label>Friction</label>
             <input id="frictionField" type="intput" value="5"/>
@@ -44,7 +58,7 @@
         </div>
         <div id="footer">
             <p>
-                2012 © Akira
+                2012 - 2013 © Akira
             </p>
         </div>
 
@@ -53,13 +67,14 @@
             {
                 // Init:Populate page fields with preferences values
                 document.getElementById("frictionField").value = widget.preferences.getItem("akiraTouchFriction");
-                document.getElementById("buttonVisibleField").checked = (widget.preferences.getItem("akiraTouchButton") == "true");
-                document.getElementById("touchEnabledField").checked = (widget.preferences.getItem("akiraTouchEnabled") == "true");
+                document.getElementById("buttonVisibleField").checked = (widget.preferences.getItem("akiraTouchButton") === "true");
+                document.getElementById("touchEnabledField").checked = (widget.preferences.getItem("akiraTouchEnabled") === "true");
                 document.getElementById("moveAmpXField").value = Math.abs(widget.preferences.getItem("akiraTouchMoveAmpX"));
                 document.getElementById("moveAmpYField").value = Math.abs(widget.preferences.getItem("akiraTouchMoveAmpY"));
                 document.getElementById("moveInvXField").checked = (widget.preferences.getItem("akiraTouchMoveAmpX") < 0);
                 document.getElementById("moveInvYField").checked = (widget.preferences.getItem("akiraTouchMoveAmpY") < 0);
                 document.getElementById("mouseButtonField").value = widget.preferences.getItem("akiraTouchMouseActiveButton");
+				document.getElementById("monostableKeyField").value = widget.preferences.getItem("akiraTouchMonostableKey");
                 // Save:Store page fields to preferences
                 function savePrefs(e)
                 {
@@ -80,6 +95,7 @@
                     };
                     widget.preferences.setItem("akiraTouchMoveAmpY", invY * moveAmpYField.value);
                     widget.preferences.setItem("akiraTouchMouseActiveButton", mouseButtonField.value);
+					widget.preferences.setItem("akiraTouchMonostableKey", monostableKeyField.value);
                     opera.extension.postMessage("PreferencesUpdated");
                 }
 
