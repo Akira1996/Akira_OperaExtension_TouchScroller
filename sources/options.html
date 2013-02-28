@@ -25,13 +25,18 @@
                 <option value="2">Right</option>
             </select>
             <br />
-            <label>Which key should be used to temporarily allow text selections in Drag Mode?</label>
+            <label>Choose a key to switch modes:</label>
             <select id="monostableKeyField">
             	<option value="ctrlKey" selected="selected">Ctrl</option>
-                <option value="cmdKey">Cmd ⌘</option>
+                <option value="metaKey">Cmd ⌘</option>
                 <option value="altKey">Alt</option>
                 <option value="shiftKey">Shift</option>
             </select>
+            <br />
+            <ul>
+                <li>press and hold it for a temporary change</li>
+                <li>press it twice to toggle modes permanently</li>
+            </ul>
             <br />
             <label>Friction</label>
             <input id="frictionField" type="intput" value="5"/>

@@ -26,6 +26,7 @@ var akiraTouch =
         x : 1,
         y : 1
     },
+	bistableKey : 0,
 
     addEventListeners : function()
     {
@@ -94,7 +95,7 @@ var akiraTouch =
     {
         if ((this.enabled !== true && !e[this.monostableKey]) || (this.enabled === true && e[this.monostableKey])) return;
 		
-		// If control type is not in the upcoming list & correct mouse button pushed:
+		// If control type is not in the upcoming list & correct mouse button is pushed:
         var excludedControls = ["input", "text", "textarea", "search", "select", "select-one", "select-multiple"];
         if (excludedControls.indexOf(e.target.type) === -1 && e.button === this.activeButton)
         {
@@ -133,7 +134,21 @@ var akiraTouch =
 	
 	onKeyUp : function(e)
     {
-        // missing: double press key to switch mode
+		if(this.monostableKey === "shiftKey")		var monostableKeyCode = 16;
+		else if(this.monostableKey === "ctrlKey")	var monostableKeyCode = 17;
+		else if(this.monostableKey === "altKey")	var monostableKeyCode = 18;
+		else /* metaKey (= Cmd on Mac) */			var monostableKeyCode = 17; // will probably change with move to WebKit!
+		
+		if(e.which !== monostableKeyCode) return;
+		
+		this.bistableKey++;
+		
+		if(this.bistableKey === 1) window.setTimeout(function(){ akiraTouch.bistableKey = 0; }, 500);
+		else //if(this.bistableKey === 2)
+		{
+			opera.extension.postMessage("toggleMode");
+			this.bistableKey = 0;
+		}
     },
 
     /**@brief Called on extension load, retrieves options */
