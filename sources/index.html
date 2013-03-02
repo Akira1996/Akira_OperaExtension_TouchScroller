@@ -4,24 +4,20 @@
         <script>
             ///@brief Toggle mode between Enabled and Disabled
             toggleMode = function()
-            {
-                if (widget.preferences["akiraTouchEnabled"] == "true")
-                {
-                    widget.preferences.setItem("akiraTouchEnabled", "false");
-                }
-                else
-                {
-                    widget.preferences.setItem("akiraTouchEnabled", "true");
-                }
-                opera.extension.broadcastMessage(JSON.stringify(widget.preferences));
-            }
+			{
+				widget.preferences.setItem("akiraTouchEnabled", (widget.preferences["akiraTouchEnabled"] === "true" ? "false" : "true"));
+				
+				refreshIcon();
+                opera.extension.broadcastMessage("PreferencesUpdated");
+            };
+			
             ///@brief Sets the icon indicating the current mode. Creates or deletes the button according to preferences
             refreshIcon = function()
             {
                 // If the preferences say "no button" and there is a button, delete it
-                if (widget.preferences.getItem("akiraTouchButton") == "false")
+                if (widget.preferences.getItem("akiraTouchButton") === "false")
                 {
-                    if (theButton != 0)
+                    if (theButton !== 0)
                     {
                         opera.contexts.toolbar.removeItem(theButton);
                         theButton = 0;
@@ -30,49 +26,41 @@
                 // If the preferences say "button" and there is no button, create it
                 else
                 {
-                    if (theButton == 0)
+                    if (theButton === 0)
                     {
                         theButton = opera.contexts.toolbar.createItem(ToolbarUIItemProperties);
                         opera.contexts.toolbar.addItem(theButton);
                     }
                     // Assign the correct icons to the button
-                    if (widget.preferences["akiraTouchEnabled"] == "true")
-                    {
-                        theButton.icon = "finger.png";
-                    }
-                    else
-                    {
-                        theButton.icon = "cursor.png";
-                    }
+                    if (widget.preferences["akiraTouchEnabled"] === "true")	theButton.icon = "finger.png";
+					else													theButton.icon = "cursor.png";
                 }
-            }
+            };
+			
             var theButton = 0;
             var ToolbarUIItemProperties =
             {
                 title : "Akira touch",
                 icon : "finger.png",
-                onclick : function(event)
-                {
-                    toggleMode();
-                    refreshIcon();
-                }
-            }
-            window.addEventListener("load", function()
-            {
-                opera.extension.onconnect = function(e)
-                {
-                    e.source.postMessage(JSON.stringify(widget.preferences));
-                };
-                opera.extension.onmessage = function(event)
-                {
-                    if (event.data == "PreferencesUpdated")
-                    {
-                        refreshIcon();
-                        opera.extension.broadcastMessage(JSON.stringify(widget.preferences));
-                    }
-                };
-                refreshIcon();
-            }, false);
+                onclick : function(event){ toggleMode(); }
+            };
+			
+            opera.extension.onconnect = function(e)
+			{
+				e.source.postMessage("connected");
+			};
+			opera.extension.onmessage = function(event)
+			{
+				if (event.data === "PreferencesUpdated")
+				{
+					refreshIcon();
+					opera.extension.broadcastMessage("PreferencesUpdated");
+				}
+				else if(event.data === "toggleMode") toggleMode();
+			};
+			
+			refreshIcon();
+
         </script>
     </head>
     <body></body>
