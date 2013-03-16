@@ -4,8 +4,6 @@ var w = widget.preferences;
 
 var akiraTouch =
 {
-    enabled : false,
-    friction : 0,
     timerH : 0,
     state : "noMove",
     oldPos :
@@ -22,11 +20,6 @@ var akiraTouch =
     {
         x : 0,
         y : 0
-    },
-    moveAmp :
-    {
-        x : 1,
-        y : 1
     },
 	bistableKey : 0,
 
