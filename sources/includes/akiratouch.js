@@ -1,9 +1,9 @@
 (function(){
-	
+
+var w = widget.preferences;
+
 var akiraTouch =
 {
-    enabled : false,
-    friction : 0,
     timerH : 0,
     state : "noMove",
     oldPos :
@@ -20,11 +20,6 @@ var akiraTouch =
     {
         x : 0,
         y : 0
-    },
-    moveAmp :
-    {
-        x : 1,
-        y : 1
     },
 	bistableKey : 0,
 
@@ -52,8 +47,8 @@ var akiraTouch =
         spd.x.sign = this.speed.x / Math.max(1, spd.x.mag);
         spd.y.sign = this.speed.y / Math.max(1, spd.y.mag);
 
-        spd.x.mag = Math.max(0, spd.x.mag - this.friction);
-        spd.y.mag = Math.max(0, spd.y.mag - this.friction);
+        spd.x.mag = Math.max(0, spd.x.mag - w.akiraTouchFriction);
+        spd.y.mag = Math.max(0, spd.y.mag - w.akiraTouchFriction);
 
         this.speed.x = spd.x.sign * spd.x.mag;
         this.speed.y = spd.y.sign * spd.y.mag;
@@ -66,8 +61,8 @@ var akiraTouch =
         if (this.state === "drag")
         {
             /* store speed for intertia mode */
-            this.speed.x = this.moveAmp.x * (this.oldPos.x - this.newPos.x);
-            this.speed.y = this.moveAmp.y * (this.oldPos.y - this.newPos.y);
+            this.speed.x = parseInt(w.akiraTouchMoveAmpX) * (this.oldPos.x - this.newPos.x);
+            this.speed.y = parseInt(w.akiraTouchMoveAmpY) * (this.oldPos.y - this.newPos.y);
             /* Scroll equally to mouse moves */
             window.scrollBy(this.speed.x, this.speed.y);
             /* reset movement */
@@ -93,11 +88,11 @@ var akiraTouch =
     /**@brief Engage drag mode upon button push */
     onMouseDown : function(e)
     {
-        if ((this.enabled !== true && !e[this.monostableKey]) || (this.enabled === true && e[this.monostableKey])) return;
+        if ((w.akiraTouchEnabled !== "true" && !e[w.akiraTouchMonostableKey]) || (w.akiraTouchEnabled === "true" && e[w.akiraTouchMonostableKey])) return;
 		
 		// If control type is not in the upcoming list & correct mouse button is pushed:
         var excludedControls = ["input", "text", "textarea", "search", "select", "select-one", "select-multiple"];
-        if (excludedControls.indexOf(e.target.type) === -1 && e.button === this.activeButton)
+        if (excludedControls.indexOf(e.target.type) === -1 && e.button === eval(w.akiraTouchMouseActiveButton))
         {
 			e.preventDefault();
 			window.document.addEventListener('mousemove', onMouseMove, false);
@@ -116,7 +111,7 @@ var akiraTouch =
     /**@brief capture mouse new position */
     onMouseMove : function(e)
     {
-        if (this.enabled !== true && !e[this.monostableKey]) return;
+        if (w.akiraTouchEnabled !== "true" && !e[w.akiraTouchMonostableKey]) return;
 		
         this.newPos.x = e.clientX;
         this.newPos.y = e.clientY;
@@ -125,7 +120,7 @@ var akiraTouch =
     /**@brief Engage inertia mode upon button release */
     onMouseUp : function(e)
     {
-        if ((this.enabled !== true && !e[this.monostableKey]) || e.button !== this.activeButton) return;
+        if ((w.akiraTouchEnabled !== "true" && !e[w.akiraTouchMonostableKey]) || e.button !== eval(w.akiraTouchMouseActiveButton)) return;
 		
 		window.document.removeEventListener('mousemove', onMouseMove, false);
 		window.document.removeEventListener('mouseup', onMouseUp, false);
@@ -134,10 +129,10 @@ var akiraTouch =
 	
 	onKeyUp : function(e)
     {
-		if(this.monostableKey === "shiftKey")		var monostableKeyCode = 16;
-		else if(this.monostableKey === "ctrlKey")	var monostableKeyCode = 17;
-		else if(this.monostableKey === "altKey")	var monostableKeyCode = 18;
-		else /* metaKey (= Cmd on Mac) */			var monostableKeyCode = 17; // will probably change with move to WebKit!
+		if	   (w.akiraTouchMonostableKey === "shiftKey")	var monostableKeyCode = 16;
+		else if(w.akiraTouchMonostableKey === "ctrlKey")	var monostableKeyCode = 17;
+		else if(w.akiraTouchMonostableKey === "altKey")		var monostableKeyCode = 18;
+		else /* metaKey (= Cmd on Mac) */					var monostableKeyCode = 17; // will probably change with move to WebKit!
 		
 		if(e.which !== monostableKeyCode) return;
 		
@@ -149,27 +144,12 @@ var akiraTouch =
 			opera.extension.postMessage("toggleMode");
 			this.bistableKey = 0;
 		}
-    },
-
-    /**@brief Called on extension load, retrieves options */
-    onMessage : function(e) // unnecessary!
-    {
-		var storage = widget.preferences;
-		
-        this.enabled		= eval(storage["akiraTouchEnabled"]);
-        this.friction		= eval(storage["akiraTouchFriction"]);
-        this.moveAmp.x		= eval(storage["akiraTouchMoveAmpX"]);
-        this.moveAmp.y		= eval(storage["akiraTouchMoveAmpY"]);
-        this.activeButton	= eval(storage["akiraTouchMouseActiveButton"]);
-		this.monostableKey	= storage["akiraTouchMonostableKey"];
     }
 };
 
 // wrap up functions so they can be removed again: 
 function onMouseMove(){	akiraTouch.onMouseMove.bind(akiraTouch)(window.event);	}
 function onMouseUp(){	akiraTouch.onMouseUp.bind(akiraTouch)(window.event);	}
-
-opera.extension.onmessage = function(e){ akiraTouch.onMessage(e); };
 
 akiraTouch.addEventListeners();
 
